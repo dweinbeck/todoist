@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "@/lib/auth";
+import { billingGuard, checkBillingAccess } from "@/lib/billing";
 import {
   createProjectSchema,
   updateProjectSchema,
@@ -15,6 +16,10 @@ import {
 export async function createProjectAction(idToken: string, formData: FormData) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   const parsed = createProjectSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
@@ -32,6 +37,10 @@ export async function updateProjectAction(idToken: string, formData: FormData) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
 
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
+
   const parsed = updateProjectSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -47,6 +56,10 @@ export async function updateProjectAction(idToken: string, formData: FormData) {
 export async function deleteProjectAction(idToken: string, id: string) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   await deleteProjectSvc(userId, id);
   revalidatePath("/tasks");

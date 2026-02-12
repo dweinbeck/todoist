@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "@/lib/auth";
+import { billingGuard, checkBillingAccess } from "@/lib/billing";
 import { createTaskSchema, updateTaskSchema } from "@/lib/schemas/task";
 import {
   assignTaskToSection,
@@ -26,6 +27,10 @@ export async function createTaskAction(
 ) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   const parsed = createTaskSchema.safeParse(data);
   if (!parsed.success) {
@@ -55,6 +60,10 @@ export async function updateTaskAction(
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
 
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
+
   const parsed = updateTaskSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
@@ -68,6 +77,10 @@ export async function deleteTaskAction(idToken: string, id: string) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
 
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
+
   await deleteTaskSvc(userId, id);
   revalidatePath("/tasks");
   return { success: true };
@@ -76,6 +89,10 @@ export async function deleteTaskAction(idToken: string, id: string) {
 export async function toggleTaskAction(idToken: string, id: string) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   await toggleTaskStatusSvc(userId, id);
   revalidatePath("/tasks");
@@ -89,6 +106,10 @@ export async function assignTaskToSectionAction(
 ) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   await assignTaskToSection(userId, taskId, sectionId);
   revalidatePath("/tasks");

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "@/lib/auth";
+import { billingGuard, checkBillingAccess } from "@/lib/billing";
 import { createTagSchema, updateTagSchema } from "@/lib/schemas/tag";
 import {
   createTag as createTagSvc,
@@ -18,6 +19,10 @@ export async function createTagAction(
 ) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   const parsed = createTagSchema.safeParse(data);
   if (!parsed.success) {
@@ -39,6 +44,10 @@ export async function updateTagAction(
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
 
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
+
   const parsed = updateTagSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
@@ -51,6 +60,10 @@ export async function updateTagAction(
 export async function deleteTagAction(idToken: string, id: string) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   await deleteTagSvc(userId, id);
   revalidatePath("/tasks");

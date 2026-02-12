@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "@/lib/auth";
+import { billingGuard, checkBillingAccess } from "@/lib/billing";
 import {
   createSectionSchema,
   updateSectionSchema,
@@ -15,6 +16,10 @@ import {
 export async function createSectionAction(idToken: string, formData: FormData) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   const parsed = createSectionSchema.safeParse({
     projectId: formData.get("projectId"),
@@ -32,6 +37,10 @@ export async function updateSectionAction(idToken: string, formData: FormData) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
 
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
+
   const parsed = updateSectionSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -47,6 +56,10 @@ export async function updateSectionAction(idToken: string, formData: FormData) {
 export async function deleteSectionAction(idToken: string, id: string) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   await deleteSectionSvc(userId, id);
   revalidatePath("/tasks");

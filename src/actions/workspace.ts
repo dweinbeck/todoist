@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { verifyUser } from "@/lib/auth";
+import { billingGuard, checkBillingAccess } from "@/lib/billing";
 import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
@@ -18,6 +19,10 @@ export async function createWorkspaceAction(
 ) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   const parsed = createWorkspaceSchema.safeParse({
     name: formData.get("name"),
@@ -37,6 +42,10 @@ export async function updateWorkspaceAction(
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
 
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
+
   const parsed = updateWorkspaceSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -52,6 +61,10 @@ export async function updateWorkspaceAction(
 export async function deleteWorkspaceAction(idToken: string, id: string) {
   const userId = await verifyUser(idToken);
   if (!userId) return { error: "Unauthorized" };
+
+  const billing = await checkBillingAccess(idToken);
+  const blocked = billingGuard(billing);
+  if (blocked) return blocked;
 
   await deleteWorkspaceSvc(userId, id);
   revalidatePath("/tasks");
