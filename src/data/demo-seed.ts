@@ -1,9 +1,9 @@
+import type { Section, Tag } from "@/generated/prisma/client";
 import type {
   ProjectWithSections,
   SidebarWorkspace,
   TaskWithRelations,
 } from "@/types";
-import type { Section, Tag } from "@/generated/prisma/client";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -33,11 +33,18 @@ const tagDefs = [
   { id: "demo-tag-8", name: "Testing", color: "#eab308" },
 ] as const;
 
-export const DEMO_TAGS: { id: string; name: string; color: string | null; userId: string }[] =
-  tagDefs.map((t) => ({ ...t, userId: DEMO_USER_ID }));
+export const DEMO_TAGS: {
+  id: string;
+  name: string;
+  color: string | null;
+  userId: string;
+}[] = tagDefs.map((t) => ({ ...t, userId: DEMO_USER_ID }));
 
-export const DEMO_SIDEBAR_TAGS: { id: string; name: string; color: string | null }[] =
-  tagDefs.map((t) => ({ id: t.id, name: t.name, color: t.color }));
+export const DEMO_SIDEBAR_TAGS: {
+  id: string;
+  name: string;
+  color: string | null;
+}[] = tagDefs.map((t) => ({ id: t.id, name: t.name, color: t.color }));
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -45,27 +52,27 @@ export const DEMO_SIDEBAR_TAGS: { id: string; name: string; color: string | null
 function makeTag(tagId: string): { tag: Tag } {
   const def = tagDefs.find((t) => t.id === tagId);
   if (!def) throw new Error(`Unknown tag: ${tagId}`);
-  return { tag: { id: def.id, userId: DEMO_USER_ID, name: def.name, color: def.color } };
+  return {
+    tag: { id: def.id, userId: DEMO_USER_ID, name: def.name, color: def.color },
+  };
 }
 
 let taskCounter = 0;
 
-function makeTask(
-  overrides: {
-    id?: string;
-    projectId: string;
-    sectionId?: string | null;
-    parentTaskId?: string | null;
-    name: string;
-    description?: string | null;
-    deadlineAt?: Date | null;
-    status?: string;
-    effort?: number | null;
-    order?: number;
-    tagIds?: string[];
-    subtasks?: TaskWithRelations[];
-  },
-): TaskWithRelations {
+function makeTask(overrides: {
+  id?: string;
+  projectId: string;
+  sectionId?: string | null;
+  parentTaskId?: string | null;
+  name: string;
+  description?: string | null;
+  deadlineAt?: Date | null;
+  status?: string;
+  effort?: number | null;
+  order?: number;
+  tagIds?: string[];
+  subtasks?: TaskWithRelations[];
+}): TaskWithRelations {
   taskCounter++;
   return {
     id: overrides.id ?? `demo-task-${taskCounter}`,
@@ -115,7 +122,8 @@ const proj1DesignTasks: TaskWithRelations[] = [
     projectId: proj1Id,
     sectionId: "demo-sec-1",
     name: "Create wireframes for homepage",
-    description: "Low-fidelity wireframes showing hero section, features grid, and testimonials layout.",
+    description:
+      "Low-fidelity wireframes showing hero section, features grid, and testimonials layout.",
     effort: 5,
     tagIds: ["demo-tag-3"],
     deadlineAt: daysFromNow(7),
@@ -268,7 +276,8 @@ const proj2ContentTasks: TaskWithRelations[] = [
     projectId: proj2Id,
     sectionId: "demo-sec-4",
     name: "Write blog post: 'Why We Rebuilt Our Product'",
-    description: "Long-form blog post targeting developers. Include code examples.",
+    description:
+      "Long-form blog post targeting developers. Include code examples.",
     effort: 5,
     tagIds: ["demo-tag-6"],
     status: "COMPLETED",
@@ -390,7 +399,8 @@ const proj3Tasks: TaskWithRelations[] = [
   makeTask({
     projectId: proj3Id,
     name: "Prepare rollback plan",
-    description: "Document step-by-step rollback procedure in case of critical issues post-launch.",
+    description:
+      "Document step-by-step rollback procedure in case of critical issues post-launch.",
     effort: 3,
     tagIds: ["demo-tag-6"],
     deadlineAt: daysAgo(1), // overdue
@@ -593,16 +603,32 @@ export const DEMO_WORKSPACES: SidebarWorkspace[] = [
     id: "demo-ws-1",
     name: "Product Launch",
     projects: [
-      { id: proj1Id, name: project1.name, openTaskCount: countOpenTasks(project1) },
-      { id: proj2Id, name: project2.name, openTaskCount: countOpenTasks(project2) },
-      { id: proj3Id, name: project3.name, openTaskCount: countOpenTasks(project3) },
+      {
+        id: proj1Id,
+        name: project1.name,
+        openTaskCount: countOpenTasks(project1),
+      },
+      {
+        id: proj2Id,
+        name: project2.name,
+        openTaskCount: countOpenTasks(project2),
+      },
+      {
+        id: proj3Id,
+        name: project3.name,
+        openTaskCount: countOpenTasks(project3),
+      },
     ],
   },
   {
     id: "demo-ws-2",
     name: "Personal",
     projects: [
-      { id: proj4Id, name: project4.name, openTaskCount: countOpenTasks(project4) },
+      {
+        id: proj4Id,
+        name: project4.name,
+        openTaskCount: countOpenTasks(project4),
+      },
     ],
   },
 ];
