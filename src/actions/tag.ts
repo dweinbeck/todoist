@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { createTagSchema, updateTagSchema } from "@/lib/schemas/tag";
 import {
   createTag as createTagSvc,
@@ -12,11 +13,15 @@ export async function createTagAction(data: {
   name: string;
   color?: string | null;
 }) {
+  const userId = await getUserIdFromCookie();
+  if (!userId) {
+    return { error: "Not authenticated" };
+  }
   const parsed = createTagSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  const tag = await createTagSvc(parsed.data);
+  const tag = await createTagSvc(parsed.data, userId);
   revalidatePath("/tasks");
   return { success: true, tagId: tag.id };
 }

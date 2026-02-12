@@ -4,7 +4,9 @@ import { PrismaClient } from "../src/generated/prisma/client";
 const DEFAULT_USER_ID = process.env.BACKFILL_USER_ID;
 
 if (!DEFAULT_USER_ID) {
-  console.error("Set BACKFILL_USER_ID environment variable to the Firebase UID to assign existing data to.");
+  console.error(
+    "Set BACKFILL_USER_ID environment variable to the Firebase UID to assign existing data to.",
+  );
   process.exit(1);
 }
 

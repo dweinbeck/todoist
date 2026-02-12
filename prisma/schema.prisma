@@ -10,7 +10,7 @@ datasource db {
 
 model Workspace {
   id        String    @id @default(cuid())
-  userId    String?
+  userId    String
   name      String
   projects  Project[]
   createdAt DateTime  @default(now())
@@ -43,7 +43,7 @@ model Section {
 
 model Task {
   id           String    @id @default(cuid())
-  userId       String?
+  userId       String
   projectId    String
   project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   sectionId    String?
@@ -67,11 +67,12 @@ model Task {
 
 model Tag {
   id     String    @id @default(cuid())
-  userId String?
+  userId String
   name   String
   color  String?
   tasks  TaskTag[]
 
+  @@unique([userId, name])
   @@index([userId])
 }
 

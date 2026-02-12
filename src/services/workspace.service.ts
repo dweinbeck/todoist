@@ -44,9 +44,12 @@ export async function getWorkspace(id: string) {
   });
 }
 
-export async function createWorkspace(input: CreateWorkspaceInput) {
+export async function createWorkspace(
+  input: CreateWorkspaceInput,
+  userId: string,
+) {
   return prisma.workspace.create({
-    data: { name: input.name },
+    data: { name: input.name, userId },
   });
 }
 

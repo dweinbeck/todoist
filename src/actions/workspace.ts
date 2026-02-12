@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getUserIdFromCookie } from "@/lib/auth";
 import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
@@ -12,13 +13,17 @@ import {
 } from "@/services/workspace.service";
 
 export async function createWorkspaceAction(formData: FormData) {
+  const userId = await getUserIdFromCookie();
+  if (!userId) {
+    return { error: "Not authenticated" };
+  }
   const parsed = createWorkspaceSchema.safeParse({
     name: formData.get("name"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  await createWorkspaceSvc(parsed.data);
+  await createWorkspaceSvc(parsed.data, userId);
   revalidatePath("/tasks");
   return { success: true };
 }

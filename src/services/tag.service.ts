@@ -12,11 +12,12 @@ export async function getTags() {
   });
 }
 
-export async function createTag(input: CreateTagInput) {
+export async function createTag(input: CreateTagInput, userId: string) {
   return prisma.tag.create({
     data: {
       name: input.name,
       color: input.color ?? null,
+      userId,
     },
   });
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { createTaskSchema, updateTaskSchema } from "@/lib/schemas/task";
 import {
   assignTaskToSection,
@@ -20,12 +21,16 @@ export async function createTaskAction(data: {
   effort?: number | null;
   tagIds?: string[];
 }) {
+  const userId = await getUserIdFromCookie();
+  if (!userId) {
+    return { error: "Not authenticated" };
+  }
   const parsed = createTaskSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
   try {
-    const task = await createTaskSvc(parsed.data);
+    const task = await createTaskSvc(parsed.data, userId);
     revalidatePath("/tasks");
     return { success: true, taskId: task.id };
   } catch (e) {

@@ -5,7 +5,7 @@ import type {
   UpdateTaskInput,
 } from "@/lib/schemas/task";
 
-export async function createTask(input: CreateTaskInput) {
+export async function createTask(input: CreateTaskInput, userId: string) {
   if (input.parentTaskId) {
     const parent = await prisma.task.findUnique({
       where: { id: input.parentTaskId },
@@ -30,6 +30,7 @@ export async function createTask(input: CreateTaskInput) {
 
   return prisma.task.create({
     data: {
+      userId,
       projectId: input.projectId,
       sectionId: input.sectionId ?? null,
       parentTaskId: input.parentTaskId ?? null,
