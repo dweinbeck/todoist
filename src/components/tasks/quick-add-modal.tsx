@@ -5,10 +5,9 @@ import { createTaskAction } from "@/actions/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
+import { EFFORT_VALUES } from "@/lib/effort";
 import { cn } from "@/lib/utils";
 import type { SidebarWorkspace } from "@/types";
-
-const EFFORT_VALUES = [1, 2, 3, 5, 8, 13] as const;
 
 interface QuickAddModalProps {
   open: boolean;

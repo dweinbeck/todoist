@@ -8,9 +8,14 @@ import { HelpTip } from "@/components/ui/help-tip";
 interface SectionHeaderProps {
   section: { id: string; name: string };
   taskCount: number;
+  effortSum: number;
 }
 
-export function SectionHeader({ section, taskCount }: SectionHeaderProps) {
+export function SectionHeader({
+  section,
+  taskCount,
+  effortSum,
+}: SectionHeaderProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(section.name);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -65,6 +70,11 @@ export function SectionHeader({ section, taskCount }: SectionHeaderProps) {
               <span className="ml-2 text-xs font-normal text-text-tertiary">
                 {taskCount}
               </span>
+              {effortSum > 0 && (
+                <span className="ml-1 text-xs font-normal text-amber">
+                  ({effortSum})
+                </span>
+              )}
             </button>
             <HelpTip tipId="task-sections" className="ml-1" />
           </div>

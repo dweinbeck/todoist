@@ -8,6 +8,7 @@ import { BoardView } from "@/components/tasks/board-view";
 import { SectionHeader } from "@/components/tasks/section-header";
 import { TaskCard } from "@/components/tasks/task-card";
 import { HelpTip } from "@/components/ui/help-tip";
+import { computeEffortSum } from "@/lib/effort";
 import type { ProjectWithSections } from "@/types";
 
 interface ProjectViewProps {
@@ -22,6 +23,12 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(project.name);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+
+  const allTopLevelTasks = [
+    ...project.tasks,
+    ...project.sections.flatMap((s) => s.tasks),
+  ];
+  const projectEffortSum = computeEffortSum(allTopLevelTasks);
 
   async function handleRename() {
     if (!name.trim() || name === project.name) {
@@ -56,13 +63,20 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
               className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)] bg-transparent border-b-2 border-gold focus:outline-none w-full"
             />
           ) : (
-            <button
-              type="button"
-              onClick={() => setEditingName(true)}
-              className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)] hover:text-gold transition-colors cursor-pointer text-left"
-            >
-              {project.name}
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => setEditingName(true)}
+                className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)] hover:text-gold transition-colors cursor-pointer text-left"
+              >
+                {project.name}
+              </button>
+              {projectEffortSum > 0 && (
+                <span className="ml-3 text-base font-normal text-amber">
+                  {projectEffortSum} effort
+                </span>
+              )}
+            </>
           )}
         </div>
 
@@ -130,6 +144,11 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
           {/* Unsectioned tasks */}
           {project.tasks.length > 0 && (
             <div className="mb-6">
+              {computeEffortSum(project.tasks) > 0 && (
+                <div className="text-xs text-amber mb-2">
+                  {computeEffortSum(project.tasks)} effort
+                </div>
+              )}
               <div className="space-y-2">
                 {project.tasks.map((task) => (
                   <TaskCard
@@ -158,6 +177,7 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
               <SectionHeader
                 section={section}
                 taskCount={section.tasks.length}
+                effortSum={computeEffortSum(section.tasks)}
               />
               <div className="space-y-2">
                 {section.tasks.map((task) => (

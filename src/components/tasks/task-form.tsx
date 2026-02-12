@@ -4,10 +4,9 @@ import { useState } from "react";
 import { createTaskAction, updateTaskAction } from "@/actions/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EFFORT_VALUES } from "@/lib/effort";
 import { cn } from "@/lib/utils";
 import type { TaskWithRelations } from "@/types";
-
-const EFFORT_VALUES = [1, 2, 3, 5, 8, 13] as const;
 
 interface TaskFormProps {
   mode: "create" | "edit";

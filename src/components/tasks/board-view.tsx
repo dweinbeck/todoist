@@ -3,6 +3,7 @@
 import { AddSectionButton } from "@/components/tasks/add-section-button";
 import { AddTaskButton } from "@/components/tasks/add-task-button";
 import { TaskCard } from "@/components/tasks/task-card";
+import { computeEffortSum } from "@/lib/effort";
 import type { ProjectWithSections } from "@/types";
 
 interface BoardViewProps {
@@ -36,9 +37,16 @@ export function BoardView({ project, allTags, sections }: BoardViewProps) {
             <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
               {col.name}
             </h3>
-            <span className="text-xs text-text-tertiary">
-              {col.tasks.length}
-            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-text-tertiary">
+                {col.tasks.length}
+              </span>
+              {computeEffortSum(col.tasks) > 0 && (
+                <span className="text-xs text-amber">
+                  ({computeEffortSum(col.tasks)})
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex-1 space-y-2">
