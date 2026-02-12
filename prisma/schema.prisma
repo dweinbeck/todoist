@@ -10,10 +10,13 @@ datasource db {
 
 model Workspace {
   id        String    @id @default(cuid())
+  userId    String?
   name      String
   projects  Project[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 model Project {
@@ -40,6 +43,7 @@ model Section {
 
 model Task {
   id           String    @id @default(cuid())
+  userId       String?
   projectId    String
   project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   sectionId    String?
@@ -56,13 +60,19 @@ model Task {
   tags         TaskTag[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, deadlineAt])
 }
 
 model Tag {
-  id    String    @id @default(cuid())
-  name  String    @unique
-  color String?
-  tasks TaskTag[]
+  id     String    @id @default(cuid())
+  userId String?
+  name   String
+  color  String?
+  tasks  TaskTag[]
+
+  @@index([userId])
 }
 
 model TaskTag {
