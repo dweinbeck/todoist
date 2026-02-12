@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { deleteSectionAction, updateSectionAction } from "@/actions/section";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { HelpTip } from "@/components/ui/help-tip";
 
 interface SectionHeaderProps {
   section: { id: string; name: string };
@@ -54,16 +55,19 @@ export function SectionHeader({ section, taskCount }: SectionHeaderProps) {
             className="text-sm font-semibold text-text-primary px-1 py-0.5 border border-border rounded-[var(--radius-button)] bg-surface focus:outline-none focus:ring-2 focus:ring-gold/50"
           />
         ) : (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="text-sm font-semibold text-text-primary hover:text-gold transition-colors cursor-pointer"
-          >
-            {section.name}
-            <span className="ml-2 text-xs font-normal text-text-tertiary">
-              {taskCount}
-            </span>
-          </button>
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="text-sm font-semibold text-text-primary hover:text-gold transition-colors cursor-pointer"
+            >
+              {section.name}
+              <span className="ml-2 text-xs font-normal text-text-tertiary">
+                {taskCount}
+              </span>
+            </button>
+            <HelpTip tipId="task-sections" className="ml-1" />
+          </div>
         )}
         <button
           type="button"

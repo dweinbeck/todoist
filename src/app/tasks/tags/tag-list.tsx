@@ -6,6 +6,7 @@ import { createTagAction, deleteTagAction } from "@/actions/tag";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { HelpTip } from "@/components/ui/help-tip";
 import { Input } from "@/components/ui/input";
 
 interface TagListProps {
@@ -55,6 +56,12 @@ export function TagList({ tags }: TagListProps) {
 
   return (
     <>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-xs font-medium text-text-secondary">
+          Manage tags
+        </span>
+        <HelpTip tipId="filters-tags" />
+      </div>
       <div className="space-y-2 mb-6">
         {tags.length === 0 && !adding && (
           <div className="rounded-2xl border border-dashed border-border p-12 text-center">

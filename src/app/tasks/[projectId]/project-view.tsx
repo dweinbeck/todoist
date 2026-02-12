@@ -7,6 +7,7 @@ import { AddTaskButton } from "@/components/tasks/add-task-button";
 import { BoardView } from "@/components/tasks/board-view";
 import { SectionHeader } from "@/components/tasks/section-header";
 import { TaskCard } from "@/components/tasks/task-card";
+import { HelpTip } from "@/components/ui/help-tip";
 import type { ProjectWithSections } from "@/types";
 
 interface ProjectViewProps {
@@ -119,6 +120,7 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
             </svg>
           </button>
         </div>
+        <HelpTip tipId="board-view-toggle" className="ml-2" />
       </div>
 
       {viewMode === "board" ? (

@@ -10,6 +10,7 @@ import {
 } from "@/actions/workspace";
 import { QuickAddModal } from "@/components/tasks/quick-add-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { HelpTip } from "@/components/ui/help-tip";
 import { cn } from "@/lib/utils";
 import type { SidebarWorkspace } from "@/types";
 
@@ -145,11 +146,11 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
           </Link>
         </div>
 
-        <div className="px-3 pt-3 pb-1">
+        <div className="px-3 pt-3 pb-1 flex items-center gap-2">
           <button
             type="button"
             onClick={() => setQuickAddOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-primary rounded-[var(--radius-button)] hover:bg-primary/90 transition-colors cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-primary rounded-[var(--radius-button)] hover:bg-primary/90 transition-colors cursor-pointer"
           >
             <svg
               width="16"
@@ -163,6 +164,7 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
             </svg>
             Add Task
           </button>
+          <HelpTip tipId="sidebar-quick-add" />
         </div>
 
         <nav className="p-3 space-y-1">
@@ -185,8 +187,11 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
 
         <div className="flex-1 p-3 overflow-y-auto">
           <div className="flex items-center justify-between mb-2 px-3">
-            <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-              Workspaces
+            <span className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                Workspaces
+              </span>
+              <HelpTip tipId="sidebar-workspaces" />
             </span>
             <button
               type="button"
