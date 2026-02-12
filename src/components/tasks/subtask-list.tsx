@@ -8,6 +8,7 @@ import {
 } from "@/actions/task";
 import { useAuth } from "@/context/AuthContext";
 import type { Task } from "@/generated/prisma/client";
+import { useDemoMode } from "@/lib/demo";
 import { cn } from "@/lib/utils";
 
 interface SubtaskListProps {
@@ -22,6 +23,7 @@ export function SubtaskList({
   projectId,
 }: SubtaskListProps) {
   const { user } = useAuth();
+  const isDemo = useDemoMode();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,13 +51,15 @@ export function SubtaskList({
         <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
           Subtasks
         </span>
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="text-xs text-gold hover:text-gold-hover transition-colors cursor-pointer"
-        >
-          + Add subtask
-        </button>
+        {!isDemo && (
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="text-xs text-gold hover:text-gold-hover transition-colors cursor-pointer"
+          >
+            + Add subtask
+          </button>
+        )}
       </div>
 
       {subtasks.map((subtask) => (
@@ -65,12 +69,17 @@ export function SubtaskList({
         >
           <button
             type="button"
-            onClick={async () => {
-              const token = await user!.getIdToken();
-              await toggleTaskAction(token, subtask.id);
-            }}
+            onClick={
+              isDemo
+                ? undefined
+                : async () => {
+                    const token = await user!.getIdToken();
+                    await toggleTaskAction(token, subtask.id);
+                  }
+            }
             className={cn(
-              "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors cursor-pointer",
+              "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
+              isDemo ? "opacity-60 cursor-default" : "cursor-pointer",
               subtask.status === "COMPLETED"
                 ? "bg-sage border-sage text-white"
                 : "border-border hover:border-gold",
@@ -99,25 +108,27 @@ export function SubtaskList({
           >
             {subtask.name}
           </span>
-          <button
-            type="button"
-            onClick={async () => {
-              const token = await user!.getIdToken();
-              await deleteTaskAction(token, subtask.id);
-            }}
-            className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-danger transition-all cursor-pointer"
-          >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          {!isDemo && (
+            <button
+              type="button"
+              onClick={async () => {
+                const token = await user!.getIdToken();
+                await deleteTaskAction(token, subtask.id);
+              }}
+              className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-danger transition-all cursor-pointer"
             >
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
       ))}
 

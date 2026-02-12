@@ -1,6 +1,7 @@
 "use client";
 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getFirebaseAuth } from "@/lib/firebase-client";
@@ -29,6 +30,12 @@ export function AuthGuard({ children }: { children: ReactNode }) {
         >
           Sign in with Google
         </button>
+        <Link
+          href="/demo"
+          className="text-sm text-text-tertiary hover:text-gold transition-colors"
+        >
+          or try the demo
+        </Link>
       </div>
     );
   }

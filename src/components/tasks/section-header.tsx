@@ -5,6 +5,7 @@ import { deleteSectionAction, updateSectionAction } from "@/actions/section";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { HelpTip } from "@/components/ui/help-tip";
 import { useAuth } from "@/context/AuthContext";
+import { useDemoMode } from "@/lib/demo";
 
 interface SectionHeaderProps {
   section: { id: string; name: string };
@@ -18,6 +19,7 @@ export function SectionHeader({
   effortSum,
 }: SectionHeaderProps) {
   const { user } = useAuth();
+  const isDemo = useDemoMode();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(section.name);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -65,41 +67,57 @@ export function SectionHeader({
           />
         ) : (
           <div className="flex items-center">
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className="text-sm font-semibold text-text-primary hover:text-gold transition-colors cursor-pointer"
-            >
-              {section.name}
-              <span className="ml-2 text-xs font-normal text-text-tertiary">
-                {taskCount}
-              </span>
-              {effortSum > 0 && (
-                <span className="ml-1 text-xs font-normal text-amber">
-                  ({effortSum})
+            {isDemo ? (
+              <span className="text-sm font-semibold text-text-primary">
+                {section.name}
+                <span className="ml-2 text-xs font-normal text-text-tertiary">
+                  {taskCount}
                 </span>
-              )}
-            </button>
+                {effortSum > 0 && (
+                  <span className="ml-1 text-xs font-normal text-amber">
+                    ({effortSum})
+                  </span>
+                )}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="text-sm font-semibold text-text-primary hover:text-gold transition-colors cursor-pointer"
+              >
+                {section.name}
+                <span className="ml-2 text-xs font-normal text-text-tertiary">
+                  {taskCount}
+                </span>
+                {effortSum > 0 && (
+                  <span className="ml-1 text-xs font-normal text-amber">
+                    ({effortSum})
+                  </span>
+                )}
+              </button>
+            )}
             <HelpTip tipId="task-sections" className="ml-1" />
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => setConfirmDelete(true)}
-          className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-danger transition-all cursor-pointer"
-          title="Delete section"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        {!isDemo && (
+          <button
+            type="button"
+            onClick={() => setConfirmDelete(true)}
+            className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-danger transition-all cursor-pointer"
+            title="Delete section"
           >
-            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          </svg>
-        </button>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <ConfirmDialog
