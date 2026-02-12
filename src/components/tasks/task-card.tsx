@@ -122,6 +122,11 @@ export function TaskCard({
                   {deadlineStr}
                 </span>
               )}
+              {task.effort != null && (
+                <span className="text-xs font-medium text-amber px-1.5 py-0.5 rounded-full bg-amber/10 border border-amber/20">
+                  {task.effort}
+                </span>
+              )}
               {task.tags.map(({ tag }) => (
                 <Badge
                   key={tag.id}

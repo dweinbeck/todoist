@@ -4,7 +4,10 @@ import { useState } from "react";
 import { createTaskAction, updateTaskAction } from "@/actions/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import type { TaskWithRelations } from "@/types";
+
+const EFFORT_VALUES = [1, 2, 3, 5, 8, 13] as const;
 
 interface TaskFormProps {
   mode: "create" | "edit";
@@ -38,6 +41,7 @@ export function TaskForm({
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     task?.tags.map((t) => t.tag.id) ?? [],
   );
+  const [effort, setEffort] = useState<number | null>(task?.effort ?? null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +58,7 @@ export function TaskForm({
             name: name.trim(),
             description: description.trim() || undefined,
             deadlineAt: deadlineAt || null,
+            effort,
             tagIds: selectedTagIds,
           })
         : await updateTaskAction({
@@ -62,6 +67,7 @@ export function TaskForm({
             description: description.trim() || null,
             deadlineAt: deadlineAt || null,
             sectionId: selectedSection || null,
+            effort,
             tagIds: selectedTagIds,
           });
 
@@ -159,6 +165,29 @@ export function TaskForm({
           </div>
         </div>
       )}
+
+      <div className="mt-3">
+        <span className="text-xs font-medium text-text-secondary mb-1.5 block">
+          Effort
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {EFFORT_VALUES.map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setEffort(effort === value ? null : value)}
+              className={cn(
+                "px-2.5 py-1 text-xs rounded-full border transition-colors cursor-pointer",
+                effort === value
+                  ? "bg-gold-light border-gold text-primary font-medium"
+                  : "border-border text-text-tertiary hover:border-gold hover:text-text-primary",
+              )}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="mt-4 flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onClose} size="sm">

@@ -5,7 +5,10 @@ import { createTaskAction } from "@/actions/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
+import { cn } from "@/lib/utils";
 import type { SidebarWorkspace } from "@/types";
+
+const EFFORT_VALUES = [1, 2, 3, 5, 8, 13] as const;
 
 interface QuickAddModalProps {
   open: boolean;
@@ -29,6 +32,7 @@ export function QuickAddModal({
   const [description, setDescription] = useState("");
   const [deadlineAt, setDeadlineAt] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [effort, setEffort] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +41,7 @@ export function QuickAddModal({
     setDescription("");
     setDeadlineAt("");
     setSelectedTagIds([]);
+    setEffort(null);
     setError(null);
     onClose();
   }
@@ -52,6 +57,7 @@ export function QuickAddModal({
       name: name.trim(),
       description: description.trim() || undefined,
       deadlineAt: deadlineAt || null,
+      effort,
       tagIds: selectedTagIds,
     });
 
@@ -155,6 +161,29 @@ export function QuickAddModal({
             </div>
           </div>
         )}
+
+        <div className="mt-3">
+          <span className="text-xs font-medium text-text-secondary mb-1.5 block">
+            Effort
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {EFFORT_VALUES.map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setEffort(effort === value ? null : value)}
+                className={cn(
+                  "px-2.5 py-1 text-xs rounded-full border transition-colors cursor-pointer",
+                  effort === value
+                    ? "bg-gold-light border-gold text-primary font-medium"
+                    : "border-border text-text-tertiary hover:border-gold hover:text-text-primary",
+                )}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-4 flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={handleClose} size="sm">
