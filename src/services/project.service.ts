@@ -4,17 +4,19 @@ import type {
   UpdateProjectInput,
 } from "@/lib/schemas/project";
 
-export async function getAllProjects() {
+export async function getAllProjects(userId: string) {
   return prisma.project.findMany({
+    where: { workspace: { userId } },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
 }
 
-export async function getProject(id: string) {
-  return prisma.project.findUnique({
+export async function getProject(userId: string, id: string) {
+  const project = await prisma.project.findUnique({
     where: { id },
     include: {
+      workspace: { select: { userId: true } },
       sections: {
         orderBy: { order: "asc" },
         include: {
@@ -40,9 +42,22 @@ export async function getProject(id: string) {
       },
     },
   });
+
+  if (!project || project.workspace.userId !== userId) {
+    return null;
+  }
+
+  // Remove workspace from returned object to avoid leaking internal structure
+  const { workspace: _workspace, ...projectData } = project;
+  return projectData;
 }
 
-export async function createProject(input: CreateProjectInput) {
+export async function createProject(userId: string, input: CreateProjectInput) {
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: input.workspaceId, userId },
+  });
+  if (!workspace) throw new Error("Workspace not found");
+
   return prisma.project.create({
     data: {
       workspaceId: input.workspaceId,
@@ -51,14 +66,30 @@ export async function createProject(input: CreateProjectInput) {
   });
 }
 
-export async function updateProject(input: UpdateProjectInput) {
+export async function updateProject(userId: string, input: UpdateProjectInput) {
+  const existing = await prisma.project.findUnique({
+    where: { id: input.id },
+    include: { workspace: { select: { userId: true } } },
+  });
+  if (!existing || existing.workspace.userId !== userId) {
+    throw new Error("Not found");
+  }
+
   return prisma.project.update({
     where: { id: input.id },
     data: { name: input.name },
   });
 }
 
-export async function deleteProject(id: string) {
+export async function deleteProject(userId: string, id: string) {
+  const existing = await prisma.project.findUnique({
+    where: { id },
+    include: { workspace: { select: { userId: true } } },
+  });
+  if (!existing || existing.workspace.userId !== userId) {
+    throw new Error("Not found");
+  }
+
   return prisma.project.delete({
     where: { id },
   });

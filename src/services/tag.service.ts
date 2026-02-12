@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/db";
 import type { CreateTagInput, UpdateTagInput } from "@/lib/schemas/tag";
 
-export async function getTags() {
+export async function getTags(userId: string) {
   return prisma.tag.findMany({
+    where: { userId },
     orderBy: { name: "asc" },
     include: {
       _count: {
@@ -12,7 +13,7 @@ export async function getTags() {
   });
 }
 
-export async function createTag(input: CreateTagInput, userId: string) {
+export async function createTag(userId: string, input: CreateTagInput) {
   return prisma.tag.create({
     data: {
       name: input.name,
@@ -22,23 +23,30 @@ export async function createTag(input: CreateTagInput, userId: string) {
   });
 }
 
-export async function updateTag(input: UpdateTagInput) {
+export async function updateTag(userId: string, input: UpdateTagInput) {
   const { id, ...data } = input;
   return prisma.tag.update({
-    where: { id },
+    where: { id, userId },
     data,
   });
 }
 
-export async function deleteTag(id: string) {
+export async function deleteTag(userId: string, id: string) {
   return prisma.tag.delete({
-    where: { id },
+    where: { id, userId },
   });
 }
 
-export async function getTasksByTag(tagId: string) {
+export async function getTasksByTag(userId: string, tagId: string) {
+  // Verify tag ownership
+  const tag = await prisma.tag.findUnique({
+    where: { id: tagId, userId },
+  });
+  if (!tag) throw new Error("Tag not found");
+
   return prisma.task.findMany({
     where: {
+      userId,
       parentTaskId: null,
       tags: { some: { tagId } },
     },

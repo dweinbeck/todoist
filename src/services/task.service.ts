@@ -5,10 +5,10 @@ import type {
   UpdateTaskInput,
 } from "@/lib/schemas/task";
 
-export async function createTask(input: CreateTaskInput, userId: string) {
+export async function createTask(userId: string, input: CreateTaskInput) {
   if (input.parentTaskId) {
     const parent = await prisma.task.findUnique({
-      where: { id: input.parentTaskId },
+      where: { id: input.parentTaskId, userId },
     });
     if (!parent) {
       throw new Error("Parent task not found");
@@ -20,6 +20,7 @@ export async function createTask(input: CreateTaskInput, userId: string) {
 
   const lastTask = await prisma.task.findFirst({
     where: {
+      userId,
       projectId: input.projectId,
       sectionId: input.sectionId ?? null,
       parentTaskId: input.parentTaskId ?? null,
@@ -53,7 +54,12 @@ export async function createTask(input: CreateTaskInput, userId: string) {
   });
 }
 
-export async function updateTask(input: UpdateTaskInput) {
+export async function updateTask(userId: string, input: UpdateTaskInput) {
+  const existing = await prisma.task.findUnique({
+    where: { id: input.id, userId },
+  });
+  if (!existing) throw new Error("Task not found");
+
   const { id, tagIds, ...data } = input;
 
   if (tagIds !== undefined) {
@@ -76,14 +82,14 @@ export async function updateTask(input: UpdateTaskInput) {
   });
 }
 
-export async function deleteTask(id: string) {
+export async function deleteTask(userId: string, id: string) {
   return prisma.task.delete({
-    where: { id },
+    where: { id, userId },
   });
 }
 
-export async function toggleTaskStatus(id: string) {
-  const task = await prisma.task.findUnique({ where: { id } });
+export async function toggleTaskStatus(userId: string, id: string) {
+  const task = await prisma.task.findUnique({ where: { id, userId } });
   if (!task) throw new Error("Task not found");
 
   const newStatus = task.status === "OPEN" ? "COMPLETED" : "OPEN";
@@ -94,23 +100,24 @@ export async function toggleTaskStatus(id: string) {
 }
 
 export async function assignTaskToSection(
+  userId: string,
   taskId: string,
   sectionId: string | null,
 ) {
   return prisma.task.update({
-    where: { id: taskId },
+    where: { id: taskId, userId },
     data: { sectionId },
   });
 }
 
-export async function reorderTask(input: ReorderTaskInput) {
+export async function reorderTask(userId: string, input: ReorderTaskInput) {
   return prisma.task.update({
-    where: { id: input.id },
+    where: { id: input.id, userId },
     data: { order: input.order },
   });
 }
 
-export async function getTasksForToday() {
+export async function getTasksForToday(userId: string) {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const endOfDay = new Date(startOfDay);
@@ -118,6 +125,7 @@ export async function getTasksForToday() {
 
   return prisma.task.findMany({
     where: {
+      userId,
       deadlineAt: { gte: startOfDay, lt: endOfDay },
       status: "OPEN",
       parentTaskId: null,
@@ -132,9 +140,10 @@ export async function getTasksForToday() {
   });
 }
 
-export async function getCompletedTasks(projectId?: string) {
+export async function getCompletedTasks(userId: string, projectId?: string) {
   return prisma.task.findMany({
     where: {
+      userId,
       status: "COMPLETED",
       parentTaskId: null,
       ...(projectId ? { projectId } : {}),
@@ -149,9 +158,10 @@ export async function getCompletedTasks(projectId?: string) {
   });
 }
 
-export async function searchTasks(query: string) {
+export async function searchTasks(userId: string, query: string) {
   return prisma.task.findMany({
     where: {
+      userId,
       parentTaskId: null,
       OR: [
         { name: { contains: query, mode: "insensitive" } },

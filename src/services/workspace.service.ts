@@ -4,8 +4,9 @@ import type {
   UpdateWorkspaceInput,
 } from "@/lib/schemas/workspace";
 
-export async function getWorkspaces() {
+export async function getWorkspaces(userId: string) {
   return prisma.workspace.findMany({
+    where: { userId },
     include: {
       projects: {
         include: {
@@ -24,9 +25,9 @@ export async function getWorkspaces() {
   });
 }
 
-export async function getWorkspace(id: string) {
+export async function getWorkspace(userId: string, id: string) {
   return prisma.workspace.findUnique({
-    where: { id },
+    where: { id, userId },
     include: {
       projects: {
         include: {
@@ -45,23 +46,26 @@ export async function getWorkspace(id: string) {
 }
 
 export async function createWorkspace(
-  input: CreateWorkspaceInput,
   userId: string,
+  input: CreateWorkspaceInput,
 ) {
   return prisma.workspace.create({
     data: { name: input.name, userId },
   });
 }
 
-export async function updateWorkspace(input: UpdateWorkspaceInput) {
+export async function updateWorkspace(
+  userId: string,
+  input: UpdateWorkspaceInput,
+) {
   return prisma.workspace.update({
-    where: { id: input.id },
+    where: { id: input.id, userId },
     data: { name: input.name },
   });
 }
 
-export async function deleteWorkspace(id: string) {
+export async function deleteWorkspace(userId: string, id: string) {
   return prisma.workspace.delete({
-    where: { id },
+    where: { id, userId },
   });
 }
