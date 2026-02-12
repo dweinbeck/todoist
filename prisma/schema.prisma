@@ -51,6 +51,7 @@ model Task {
   description  String?
   deadlineAt   DateTime?
   status       String    @default("OPEN")
+  effort       Int?
   order        Float     @default(0)
   tags         TaskTag[]
   createdAt    DateTime  @default(now())

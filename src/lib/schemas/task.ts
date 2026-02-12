@@ -7,6 +7,17 @@ export const createTaskSchema = z.object({
   name: z.string().min(1, "Name is required").max(500),
   description: z.string().max(5000).optional(),
   deadlineAt: z.coerce.date().nullable().optional(),
+  effort: z
+    .union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(5),
+      z.literal(8),
+      z.literal(13),
+    ])
+    .nullable()
+    .optional(),
   tagIds: z.array(z.string()).optional(),
 });
 
@@ -16,6 +27,17 @@ export const updateTaskSchema = z.object({
   description: z.string().max(5000).nullable().optional(),
   deadlineAt: z.coerce.date().nullable().optional(),
   sectionId: z.string().nullable().optional(),
+  effort: z
+    .union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(5),
+      z.literal(8),
+      z.literal(13),
+    ])
+    .nullable()
+    .optional(),
   tagIds: z.array(z.string()).optional(),
 });
 

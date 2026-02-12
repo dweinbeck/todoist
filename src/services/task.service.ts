@@ -36,6 +36,7 @@ export async function createTask(input: CreateTaskInput) {
       name: input.name,
       description: input.description ?? null,
       deadlineAt: input.deadlineAt ?? null,
+      effort: input.effort ?? null,
       order,
       tags: input.tagIds?.length
         ? {

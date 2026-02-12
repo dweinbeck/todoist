@@ -17,6 +17,7 @@ export async function createTaskAction(data: {
   name: string;
   description?: string;
   deadlineAt?: string | null;
+  effort?: number | null;
   tagIds?: string[];
 }) {
   const parsed = createTaskSchema.safeParse(data);
@@ -38,6 +39,7 @@ export async function updateTaskAction(data: {
   description?: string | null;
   deadlineAt?: string | null;
   sectionId?: string | null;
+  effort?: number | null;
   tagIds?: string[];
 }) {
   const parsed = updateTaskSchema.safeParse(data);
