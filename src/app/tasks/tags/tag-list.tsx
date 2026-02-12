@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { HelpTip } from "@/components/ui/help-tip";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 
 interface TagListProps {
   tags: { id: string; name: string; color: string | null; taskCount: number }[];
@@ -27,6 +28,7 @@ const TAG_COLORS = [
 ];
 
 export function TagList({ tags }: TagListProps) {
+  const { user } = useAuth();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [color, setColor] = useState(TAG_COLORS[0]);
@@ -40,7 +42,8 @@ export function TagList({ tags }: TagListProps) {
     e.preventDefault();
     if (!name.trim()) return;
     setLoading(true);
-    await createTagAction({ name: name.trim(), color });
+    const token = await user!.getIdToken();
+    await createTagAction(token, { name: name.trim(), color });
     setName("");
     setAdding(false);
     setLoading(false);
@@ -49,7 +52,8 @@ export function TagList({ tags }: TagListProps) {
   async function handleDelete() {
     if (!deleteTarget) return;
     setLoading(true);
-    await deleteTagAction(deleteTarget.id);
+    const token = await user!.getIdToken();
+    await deleteTagAction(token, deleteTarget.id);
     setDeleteTarget(null);
     setLoading(false);
   }

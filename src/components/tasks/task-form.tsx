@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createTaskAction, updateTaskAction } from "@/actions/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 import { EFFORT_VALUES } from "@/lib/effort";
 import { cn } from "@/lib/utils";
 import type { TaskWithRelations } from "@/types";
@@ -27,6 +28,7 @@ export function TaskForm({
   sections,
   onClose,
 }: TaskFormProps) {
+  const { user } = useAuth();
   const [name, setName] = useState(task?.name ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [deadlineAt, setDeadlineAt] = useState(
@@ -49,9 +51,11 @@ export function TaskForm({
     setLoading(true);
     setError(null);
 
+    const token = await user!.getIdToken();
+
     const result =
       mode === "create"
-        ? await createTaskAction({
+        ? await createTaskAction(token, {
             projectId,
             sectionId: selectedSection || null,
             name: name.trim(),
@@ -60,7 +64,7 @@ export function TaskForm({
             effort,
             tagIds: selectedTagIds,
           })
-        : await updateTaskAction({
+        : await updateTaskAction(token, {
             id: task?.id ?? "",
             name: name.trim(),
             description: description.trim() || null,

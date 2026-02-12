@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getAllProjects } from "@/services/project.service";
 import { getCompletedTasks } from "@/services/task.service";
 import { CompletedView } from "./completed-view";
@@ -11,10 +13,13 @@ interface CompletedPageProps {
 export default async function CompletedPage({
   searchParams,
 }: CompletedPageProps) {
+  const userId = await getUserIdFromCookie();
+  if (!userId) redirect("/");
+
   const { project: projectId } = await searchParams;
   const [tasks, projects] = await Promise.all([
-    getCompletedTasks(projectId),
-    getAllProjects(),
+    getCompletedTasks(userId, projectId),
+    getAllProjects(userId),
   ]);
 
   return (

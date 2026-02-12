@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { TaskCard } from "@/components/tasks/task-card";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getTags } from "@/services/tag.service";
 import { searchTasks } from "@/services/task.service";
 import { SearchInput } from "./search-input";
@@ -10,11 +12,14 @@ interface SearchPageProps {
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const userId = await getUserIdFromCookie();
+  if (!userId) redirect("/");
+
   const { q } = await searchParams;
   const query = q?.trim() ?? "";
   const [tasks, tags] = await Promise.all([
-    query ? searchTasks(query) : Promise.resolve([]),
-    getTags(),
+    query ? searchTasks(userId, query) : Promise.resolve([]),
+    getTags(userId),
   ]);
   const allTags = tags.map((t) => ({ id: t.id, name: t.name, color: t.color }));
 

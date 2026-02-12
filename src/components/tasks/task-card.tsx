@@ -4,6 +4,7 @@ import { useState } from "react";
 import { deleteTaskAction, toggleTaskAction } from "@/actions/task";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import type { TaskWithRelations } from "@/types";
 import { SubtaskList } from "./subtask-list";
@@ -22,6 +23,7 @@ export function TaskCard({
   allTags,
   sections,
 }: TaskCardProps) {
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -30,12 +32,14 @@ export function TaskCard({
 
   async function handleToggle(e: React.MouseEvent) {
     e.stopPropagation();
-    await toggleTaskAction(task.id);
+    const token = await user!.getIdToken();
+    await toggleTaskAction(token, task.id);
   }
 
   async function handleDelete() {
     setLoading(true);
-    await deleteTaskAction(task.id);
+    const token = await user!.getIdToken();
+    await deleteTaskAction(token, task.id);
     setConfirmDelete(false);
     setLoading(false);
   }

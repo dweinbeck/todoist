@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { verifyUser } from "@/lib/auth";
 import {
   createProjectSchema,
   updateProjectSchema,
@@ -11,7 +12,10 @@ import {
   updateProject as updateProjectSvc,
 } from "@/services/project.service";
 
-export async function createProjectAction(formData: FormData) {
+export async function createProjectAction(idToken: string, formData: FormData) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
   const parsed = createProjectSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     name: formData.get("name"),
@@ -19,12 +23,15 @@ export async function createProjectAction(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  const project = await createProjectSvc(parsed.data);
+  const project = await createProjectSvc(userId, parsed.data);
   revalidatePath("/tasks");
   return { success: true, projectId: project.id };
 }
 
-export async function updateProjectAction(formData: FormData) {
+export async function updateProjectAction(idToken: string, formData: FormData) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
   const parsed = updateProjectSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -32,13 +39,16 @@ export async function updateProjectAction(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  await updateProjectSvc(parsed.data);
+  await updateProjectSvc(userId, parsed.data);
   revalidatePath("/tasks");
   return { success: true };
 }
 
-export async function deleteProjectAction(id: string) {
-  await deleteProjectSvc(id);
+export async function deleteProjectAction(idToken: string, id: string) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
+  await deleteProjectSvc(userId, id);
   revalidatePath("/tasks");
   return { success: true };
 }

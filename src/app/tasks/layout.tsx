@@ -1,4 +1,6 @@
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Sidebar } from "@/components/tasks/sidebar";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getTags } from "@/services/tag.service";
 import { getWorkspaces } from "@/services/workspace.service";
 import type { SidebarWorkspace } from "@/types";
@@ -8,7 +10,16 @@ export default async function TasksLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [workspaces, tags] = await Promise.all([getWorkspaces(), getTags()]);
+  const userId = await getUserIdFromCookie();
+
+  if (!userId) {
+    return <AuthGuard>{null}</AuthGuard>;
+  }
+
+  const [workspaces, tags] = await Promise.all([
+    getWorkspaces(userId),
+    getTags(userId),
+  ]);
 
   const sidebarWorkspaces: SidebarWorkspace[] = workspaces.map((w) => ({
     id: w.id,

@@ -5,6 +5,7 @@ import { createTaskAction } from "@/actions/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
+import { useAuth } from "@/context/AuthContext";
 import { EFFORT_VALUES } from "@/lib/effort";
 import { cn } from "@/lib/utils";
 import type { SidebarWorkspace } from "@/types";
@@ -22,6 +23,7 @@ export function QuickAddModal({
   workspaces,
   allTags,
 }: QuickAddModalProps) {
+  const { user } = useAuth();
   const allProjects = workspaces.flatMap((w) =>
     w.projects.map((p) => ({ ...p, workspaceName: w.name })),
   );
@@ -51,7 +53,8 @@ export function QuickAddModal({
     setLoading(true);
     setError(null);
 
-    const result = await createTaskAction({
+    const token = await user!.getIdToken();
+    const result = await createTaskAction(token, {
       projectId,
       name: name.trim(),
       description: description.trim() || undefined,

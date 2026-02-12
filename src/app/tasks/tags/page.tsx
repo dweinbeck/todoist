@@ -1,10 +1,15 @@
+import { redirect } from "next/navigation";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getTags } from "@/services/tag.service";
 import { TagList } from "./tag-list";
 
 export const metadata = { title: "Filters & Tags" };
 
 export default async function TagsPage() {
-  const tags = await getTags();
+  const userId = await getUserIdFromCookie();
+  if (!userId) redirect("/");
+
+  const tags = await getTags(userId);
 
   return (
     <div className="p-8 max-w-3xl mx-auto">

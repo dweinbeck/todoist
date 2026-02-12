@@ -1,11 +1,19 @@
+import { redirect } from "next/navigation";
 import { TaskCard } from "@/components/tasks/task-card";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getTags } from "@/services/tag.service";
 import { getTasksForToday } from "@/services/task.service";
 
 export const metadata = { title: "Today" };
 
 export default async function TodayPage() {
-  const [tasks, tags] = await Promise.all([getTasksForToday(), getTags()]);
+  const userId = await getUserIdFromCookie();
+  if (!userId) redirect("/");
+
+  const [tasks, tags] = await Promise.all([
+    getTasksForToday(userId),
+    getTags(userId),
+  ]);
   const allTags = tags.map((t) => ({ id: t.id, name: t.name, color: t.color }));
 
   return (

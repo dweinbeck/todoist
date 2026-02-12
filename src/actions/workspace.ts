@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getUserIdFromCookie } from "@/lib/auth";
+import { verifyUser } from "@/lib/auth";
 import {
   createWorkspaceSchema,
   updateWorkspaceSchema,
@@ -12,23 +12,31 @@ import {
   updateWorkspace as updateWorkspaceSvc,
 } from "@/services/workspace.service";
 
-export async function createWorkspaceAction(formData: FormData) {
-  const userId = await getUserIdFromCookie();
-  if (!userId) {
-    return { error: "Not authenticated" };
-  }
+export async function createWorkspaceAction(
+  idToken: string,
+  formData: FormData,
+) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
   const parsed = createWorkspaceSchema.safeParse({
     name: formData.get("name"),
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  await createWorkspaceSvc(parsed.data, userId);
+  await createWorkspaceSvc(userId, parsed.data);
   revalidatePath("/tasks");
   return { success: true };
 }
 
-export async function updateWorkspaceAction(formData: FormData) {
+export async function updateWorkspaceAction(
+  idToken: string,
+  formData: FormData,
+) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
   const parsed = updateWorkspaceSchema.safeParse({
     id: formData.get("id"),
     name: formData.get("name"),
@@ -36,13 +44,16 @@ export async function updateWorkspaceAction(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  await updateWorkspaceSvc(parsed.data);
+  await updateWorkspaceSvc(userId, parsed.data);
   revalidatePath("/tasks");
   return { success: true };
 }
 
-export async function deleteWorkspaceAction(id: string) {
-  await deleteWorkspaceSvc(id);
+export async function deleteWorkspaceAction(idToken: string, id: string) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
+  await deleteWorkspaceSvc(userId, id);
   revalidatePath("/tasks");
   return { success: true };
 }

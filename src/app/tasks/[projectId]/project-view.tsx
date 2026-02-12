@@ -8,6 +8,7 @@ import { BoardView } from "@/components/tasks/board-view";
 import { SectionHeader } from "@/components/tasks/section-header";
 import { TaskCard } from "@/components/tasks/task-card";
 import { HelpTip } from "@/components/ui/help-tip";
+import { useAuth } from "@/context/AuthContext";
 import { computeEffortSum } from "@/lib/effort";
 import type { ProjectWithSections } from "@/types";
 
@@ -20,6 +21,7 @@ interface ProjectViewProps {
 type ViewMode = "list" | "board";
 
 export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
+  const { user } = useAuth();
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(project.name);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
@@ -36,10 +38,11 @@ export function ProjectView({ project, allTags, sections }: ProjectViewProps) {
       setName(project.name);
       return;
     }
+    const token = await user!.getIdToken();
     const formData = new FormData();
     formData.set("id", project.id);
     formData.set("name", name.trim());
-    await updateProjectAction(formData);
+    await updateProjectAction(token, formData);
     setEditingName(false);
   }
 

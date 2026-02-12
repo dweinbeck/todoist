@@ -1,5 +1,6 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { TaskCard } from "@/components/tasks/task-card";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getTags, getTasksByTag } from "@/services/tag.service";
 
 interface TagDetailPageProps {
@@ -7,8 +8,14 @@ interface TagDetailPageProps {
 }
 
 export default async function TagDetailPage({ params }: TagDetailPageProps) {
+  const userId = await getUserIdFromCookie();
+  if (!userId) redirect("/");
+
   const { tagId } = await params;
-  const [tasks, tags] = await Promise.all([getTasksByTag(tagId), getTags()]);
+  const [tasks, tags] = await Promise.all([
+    getTasksByTag(userId, tagId),
+    getTags(userId),
+  ]);
 
   const tag = tags.find((t) => t.id === tagId);
   if (!tag) {

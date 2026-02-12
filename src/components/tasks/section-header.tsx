@@ -4,6 +4,7 @@ import { useState } from "react";
 import { deleteSectionAction, updateSectionAction } from "@/actions/section";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { HelpTip } from "@/components/ui/help-tip";
+import { useAuth } from "@/context/AuthContext";
 
 interface SectionHeaderProps {
   section: { id: string; name: string };
@@ -16,6 +17,7 @@ export function SectionHeader({
   taskCount,
   effortSum,
 }: SectionHeaderProps) {
+  const { user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(section.name);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -27,16 +29,18 @@ export function SectionHeader({
       setName(section.name);
       return;
     }
+    const token = await user!.getIdToken();
     const formData = new FormData();
     formData.set("id", section.id);
     formData.set("name", name.trim());
-    await updateSectionAction(formData);
+    await updateSectionAction(token, formData);
     setEditing(false);
   }
 
   async function handleDelete() {
     setLoading(true);
-    await deleteSectionAction(section.id);
+    const token = await user!.getIdToken();
+    await deleteSectionAction(token, section.id);
     setConfirmDelete(false);
     setLoading(false);
   }

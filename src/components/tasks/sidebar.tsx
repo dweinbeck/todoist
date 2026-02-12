@@ -11,6 +11,7 @@ import {
 import { QuickAddModal } from "@/components/tasks/quick-add-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { HelpTip } from "@/components/ui/help-tip";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import type { SidebarWorkspace } from "@/types";
 
@@ -99,6 +100,7 @@ function NavIcon({ icon }: { icon: string }) {
 
 export function Sidebar({ workspaces, allTags }: SidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [addingWorkspace, setAddingWorkspace] = useState(false);
   const [addingProjectFor, setAddingProjectFor] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -111,14 +113,16 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
 
   async function handleAddWorkspace(formData: FormData) {
     setLoading(true);
-    await createWorkspaceAction(formData);
+    const token = await user!.getIdToken();
+    await createWorkspaceAction(token, formData);
     setAddingWorkspace(false);
     setLoading(false);
   }
 
   async function handleAddProject(formData: FormData) {
     setLoading(true);
-    await createProjectAction(formData);
+    const token = await user!.getIdToken();
+    await createProjectAction(token, formData);
     setAddingProjectFor(null);
     setLoading(false);
   }
@@ -126,10 +130,11 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
   async function handleDelete() {
     if (!deleteTarget) return;
     setLoading(true);
+    const token = await user!.getIdToken();
     if (deleteTarget.type === "workspace") {
-      await deleteWorkspaceAction(deleteTarget.id);
+      await deleteWorkspaceAction(token, deleteTarget.id);
     } else {
-      await deleteProjectAction(deleteTarget.id);
+      await deleteProjectAction(token, deleteTarget.id);
     }
     setDeleteTarget(null);
     setLoading(false);

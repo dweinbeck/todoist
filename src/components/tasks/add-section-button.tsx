@@ -2,21 +2,24 @@
 
 import { useState } from "react";
 import { createSectionAction } from "@/actions/section";
+import { useAuth } from "@/context/AuthContext";
 
 interface AddSectionButtonProps {
   projectId: string;
 }
 
 export function AddSectionButton({ projectId }: AddSectionButtonProps) {
+  const { user } = useAuth();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
 
   async function handleAdd() {
     if (!name.trim()) return;
+    const token = await user!.getIdToken();
     const formData = new FormData();
     formData.set("projectId", projectId);
     formData.set("name", name.trim());
-    await createSectionAction(formData);
+    await createSectionAction(token, formData);
     setName("");
     setAdding(false);
   }

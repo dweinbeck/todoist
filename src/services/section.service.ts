@@ -19,7 +19,9 @@ async function verifyProjectOwnership(projectId: string, userId: string) {
 async function verifySectionOwnership(sectionId: string, userId: string) {
   const section = await prisma.section.findUnique({
     where: { id: sectionId },
-    include: { project: { include: { workspace: { select: { userId: true } } } } },
+    include: {
+      project: { include: { workspace: { select: { userId: true } } } },
+    },
   });
   if (!section || section.project.workspace.userId !== userId) {
     throw new Error("Not found");
@@ -62,7 +64,10 @@ export async function deleteSection(userId: string, id: string) {
   });
 }
 
-export async function reorderSection(userId: string, input: ReorderSectionInput) {
+export async function reorderSection(
+  userId: string,
+  input: ReorderSectionInput,
+) {
   await verifySectionOwnership(input.id, userId);
 
   return prisma.section.update({

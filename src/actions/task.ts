@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getUserIdFromCookie } from "@/lib/auth";
+import { verifyUser } from "@/lib/auth";
 import { createTaskSchema, updateTaskSchema } from "@/lib/schemas/task";
 import {
   assignTaskToSection,
@@ -11,26 +11,28 @@ import {
   updateTask as updateTaskSvc,
 } from "@/services/task.service";
 
-export async function createTaskAction(data: {
-  projectId: string;
-  sectionId?: string | null;
-  parentTaskId?: string | null;
-  name: string;
-  description?: string;
-  deadlineAt?: string | null;
-  effort?: number | null;
-  tagIds?: string[];
-}) {
-  const userId = await getUserIdFromCookie();
-  if (!userId) {
-    return { error: "Not authenticated" };
-  }
+export async function createTaskAction(
+  idToken: string,
+  data: {
+    projectId: string;
+    sectionId?: string | null;
+    parentTaskId?: string | null;
+    name: string;
+    description?: string;
+    deadlineAt?: string | null;
+    effort?: number | null;
+    tagIds?: string[];
+  },
+) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
   const parsed = createTaskSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
   try {
-    const task = await createTaskSvc(parsed.data, userId);
+    const task = await createTaskSvc(userId, parsed.data);
     revalidatePath("/tasks");
     return { success: true, taskId: task.id };
   } catch (e) {
@@ -38,41 +40,57 @@ export async function createTaskAction(data: {
   }
 }
 
-export async function updateTaskAction(data: {
-  id: string;
-  name?: string;
-  description?: string | null;
-  deadlineAt?: string | null;
-  sectionId?: string | null;
-  effort?: number | null;
-  tagIds?: string[];
-}) {
+export async function updateTaskAction(
+  idToken: string,
+  data: {
+    id: string;
+    name?: string;
+    description?: string | null;
+    deadlineAt?: string | null;
+    sectionId?: string | null;
+    effort?: number | null;
+    tagIds?: string[];
+  },
+) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
   const parsed = updateTaskSchema.safeParse(data);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
-  await updateTaskSvc(parsed.data);
+  await updateTaskSvc(userId, parsed.data);
   revalidatePath("/tasks");
   return { success: true };
 }
 
-export async function deleteTaskAction(id: string) {
-  await deleteTaskSvc(id);
+export async function deleteTaskAction(idToken: string, id: string) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
+  await deleteTaskSvc(userId, id);
   revalidatePath("/tasks");
   return { success: true };
 }
 
-export async function toggleTaskAction(id: string) {
-  await toggleTaskStatusSvc(id);
+export async function toggleTaskAction(idToken: string, id: string) {
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
+  await toggleTaskStatusSvc(userId, id);
   revalidatePath("/tasks");
   return { success: true };
 }
 
 export async function assignTaskToSectionAction(
+  idToken: string,
   taskId: string,
   sectionId: string | null,
 ) {
-  await assignTaskToSection(taskId, sectionId);
+  const userId = await verifyUser(idToken);
+  if (!userId) return { error: "Unauthorized" };
+
+  await assignTaskToSection(userId, taskId, sectionId);
   revalidatePath("/tasks");
   return { success: true };
 }

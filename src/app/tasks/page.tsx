@@ -1,7 +1,12 @@
+import { redirect } from "next/navigation";
+import { getUserIdFromCookie } from "@/lib/auth";
 import { getWorkspaces } from "@/services/workspace.service";
 
 export default async function TasksPage() {
-  const workspaces = await getWorkspaces();
+  const userId = await getUserIdFromCookie();
+  if (!userId) redirect("/");
+
+  const workspaces = await getWorkspaces(userId);
   const hasWorkspaces = workspaces.length > 0;
 
   return (

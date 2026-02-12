@@ -6,6 +6,7 @@ import {
   deleteTaskAction,
   toggleTaskAction,
 } from "@/actions/task";
+import { useAuth } from "@/context/AuthContext";
 import type { Task } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ export function SubtaskList({
   parentTaskId,
   projectId,
 }: SubtaskListProps) {
+  const { user } = useAuth();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,8 @@ export function SubtaskList({
   async function handleAdd() {
     if (!name.trim()) return;
     setLoading(true);
-    const result = await createTaskAction({
+    const token = await user!.getIdToken();
+    const result = await createTaskAction(token, {
       projectId,
       parentTaskId,
       name: name.trim(),
@@ -62,7 +65,10 @@ export function SubtaskList({
         >
           <button
             type="button"
-            onClick={() => toggleTaskAction(subtask.id)}
+            onClick={async () => {
+              const token = await user!.getIdToken();
+              await toggleTaskAction(token, subtask.id);
+            }}
             className={cn(
               "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors cursor-pointer",
               subtask.status === "COMPLETED"
@@ -95,7 +101,10 @@ export function SubtaskList({
           </span>
           <button
             type="button"
-            onClick={() => deleteTaskAction(subtask.id)}
+            onClick={async () => {
+              const token = await user!.getIdToken();
+              await deleteTaskAction(token, subtask.id);
+            }}
             className="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-danger transition-all cursor-pointer"
           >
             <svg
