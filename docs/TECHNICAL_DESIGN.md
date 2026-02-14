@@ -2,7 +2,7 @@
 
 ## System Architecture
 
-Todoist is a server-rendered Next.js 16 application using the App Router with React Server Components for data fetching and Server Actions for mutations. The architecture follows a layered pattern: **Pages** (server components that fetch data) call **Services** (business logic and Prisma queries), while **Client Components** (interactive UI) invoke **Server Actions** (thin orchestration layer that validates input via Zod schemas, delegates to services, and triggers path revalidation).
+Tasks is a server-rendered Next.js 16 application using the App Router with React Server Components for data fetching and Server Actions for mutations. The architecture follows a layered pattern: **Pages** (server components that fetch data) call **Services** (business logic and Prisma queries), while **Client Components** (interactive UI) invoke **Server Actions** (thin orchestration layer that validates input via Zod schemas, delegates to services, and triggers path revalidation).
 
 Data is stored in PostgreSQL accessed through Prisma ORM. The application uses a singleton Prisma client pattern to avoid connection pool exhaustion during development hot reloads. All UI components are custom-built with Tailwind CSS 4 -- no external component library is used.
 
@@ -38,7 +38,7 @@ Data is stored in PostgreSQL accessed through Prisma ORM. The application uses a
 ## Directory Structure
 
 ```
-todoist/
+tasks/
 ├── prisma/
 │   └── schema.prisma               # Database schema (6 models)
 ├── prisma.config.ts                 # Prisma engine + datasource config

@@ -1,4 +1,4 @@
-# Roadmap: Todoist-like Tasks App
+# Roadmap: Tasks App
 
 ## Milestones
 

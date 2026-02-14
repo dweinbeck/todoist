@@ -14,7 +14,7 @@ export function DemoSidebar() {
       <div className="p-4 border-b border-border">
         <Link href="/demo" className="flex items-center gap-2">
           <span className="text-lg font-bold text-primary font-[family-name:var(--font-display)]">
-            Todoist
+            Tasks
           </span>
           <span className="text-xs font-medium text-text-tertiary bg-gold-light px-1.5 py-0.5 rounded">
             Demo

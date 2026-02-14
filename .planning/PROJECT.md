@@ -1,8 +1,8 @@
-# Todoist-like Tasks App
+# Tasks-like Tasks App
 
 ## What This Is
 
-A standalone task management application modeled after Todoist, accessible from dan-weinbeck.com's Apps page. It provides hierarchical task organization (Workspaces > Projects > Sections > Tasks > Subtasks) with list and board views, sidebar navigation, smart views (Today, Completed, Search, Tags), a quick-add modal, and full CRUD for all entities. Built as a separate Next.js 16 app with its own Postgres database, visually consistent with the personal-brand site's navy/gold/beige theme.
+A standalone task management application accessible from dan-weinbeck.com's Apps page. It provides hierarchical task organization (Workspaces > Projects > Sections > Tasks > Subtasks) with list and board views, sidebar navigation, smart views (Today, Completed, Search, Tags), a quick-add modal, and full CRUD for all entities. Built as a separate Next.js 16 app with its own Postgres database, visually consistent with the personal-brand site's navy/gold/beige theme.
 
 ## Core Value
 
@@ -32,7 +32,7 @@ Users can organize and track tasks in a hierarchical structure with multiple vie
 - Sharing/collaboration, invites, multi-user permissions — single-user MVP first
 - Recurring tasks, reminders/notifications, natural-language parsing — complexity not needed for MVP
 - Mobile app, offline-first, sync across devices — web-first
-- Perfect Todoist parity — only requested features
+- Feature creep — only requested features
 - Drag-and-drop reordering — implement basic "move task to section" via menu instead
 - OAuth/social login — not needed for standalone MVP
 - Real-time collaboration/websockets — single user
@@ -43,7 +43,7 @@ Users can organize and track tasks in a hierarchical structure with multiple vie
 
 **Parent site:** dan-weinbeck.com (Next.js 16, App Router, React 19, Tailwind CSS 4, Firebase, Biome, Vitest)
 
-**Integration plan:** This app is standalone in `/Documents/todoist` with its own database and deployment. Will be linked from the personal-brand site's Apps page for access. Future integration may involve embedding or monorepo structure.
+**Integration plan:** This app is standalone with its own database and deployment. Will be linked from the personal-brand site's Apps page for access. Future integration may involve embedding or monorepo structure.
 
 **Current state (v1.0 shipped):**
 - ~14,800 lines of TypeScript/TSX across 77 files

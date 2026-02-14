@@ -49,9 +49,9 @@ These features are expected in any task management app. Missing them = users lea
 | Keyboard shortcuts | Nice-to-have post-MVP | Focus management complexity |
 | Undo/redo | Nice UX but complex state management | Optimistic updates, rollback logic |
 
-## Todoist Sidebar Structure (Reference)
+## Sidebar Structure (Reference)
 
-Todoist's sidebar includes:
+Reference sidebar includes:
 - **Inbox** (default project for uncategorized tasks)
 - **Today** (tasks due today)
 - **Upcoming** (future scheduled tasks)
@@ -67,9 +67,9 @@ Todoist's sidebar includes:
 - Filters & Tags
 - Workspaces → Projects (with counts)
 
-## Todoist View Options (Reference)
+## View Options (Reference)
 
-Todoist supports: List, Board, Day Calendar, Week Calendar, Month Calendar.
+Reference app supports: List, Board, Day Calendar, Week Calendar, Month Calendar.
 Sorting by: alphabetical, assignee, due date, creation date, priority, project.
 Filtering by: assignee, date, deadline, priority, label, workspace.
 

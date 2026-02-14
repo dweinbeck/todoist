@@ -1,10 +1,10 @@
-# Todoist
+# Tasks
 
-> A hierarchical task management application modeled after Todoist, built with Next.js and styled to match dan-weinbeck.com.
+> A hierarchical task management application built with Next.js and styled to match dan-weinbeck.com.
 
 ## Description
 
-Todoist is a standalone task management web application that provides hierarchical task organization through a Workspace > Project > Section > Task > Subtask structure. Users can create and manage workspaces containing multiple projects, each with named sections to group tasks. Tasks support descriptions, deadlines, tags, and one level of subtasks.
+Tasks is a standalone task management web application that provides hierarchical task organization through a Workspace > Project > Section > Task > Subtask structure. Users can create and manage workspaces containing multiple projects, each with named sections to group tasks. Tasks support descriptions, deadlines, tags, and one level of subtasks.
 
 The application offers two project views -- a list view grouped by section and a board (Kanban) view with sections as columns -- along with smart views for Today's tasks, completed tasks, search, and tag-based filtering. A persistent sidebar provides tree navigation across workspaces and projects with live open-task counts, plus a quick-add modal for creating tasks from any page.
 

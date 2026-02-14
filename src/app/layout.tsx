@@ -23,8 +23,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Todoist",
-    default: "Todoist - Task Management",
+    template: "%s | Tasks",
+    default: "Tasks - Task Management",
   },
   description: "A task management application",
 };

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Todoist is a Next.js 16 application backed by PostgreSQL via Prisma Postgres. For local development, it uses the `prisma dev` command to run a local Prisma Postgres server (which includes a local PostgreSQL instance). For production deployment, it targets Vercel (or any Node.js hosting platform) with a remote PostgreSQL database.
+Tasks is a Next.js 16 application backed by PostgreSQL via Prisma Postgres. For local development, it uses the `prisma dev` command to run a local Prisma Postgres server (which includes a local PostgreSQL instance). For production deployment, it targets Vercel (or any Node.js hosting platform) with a remote PostgreSQL database.
 
 ## Environment Variables
 
@@ -38,7 +38,7 @@ The API key in the local development URL is a Base64-encoded JSON object contain
 ```bash
 # 1. Clone the repository
 git clone <repository-url>
-cd todoist
+cd tasks
 
 # 2. Install dependencies
 npm install

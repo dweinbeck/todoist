@@ -1,4 +1,4 @@
-# Project Milestones: Todoist-like Tasks App
+# Project Milestones: Tasks App
 
 ## v1.0 MVP (Shipped: 2026-02-10)
 

@@ -12,7 +12,7 @@ export default async function TasksPage() {
   return (
     <div className="p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-text-primary font-[family-name:var(--font-display)] mb-2">
-        Welcome to Todoist
+        Welcome to Tasks
       </h1>
       <p className="text-text-secondary mb-8">
         {hasWorkspaces

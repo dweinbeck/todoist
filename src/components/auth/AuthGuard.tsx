@@ -22,7 +22,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-6">
-        <p className="text-text-secondary text-lg">Sign in to access Todoist</p>
+        <p className="text-text-secondary text-lg">Sign in to access Tasks</p>
         <button
           type="button"
           onClick={() => signInWithPopup(getFirebaseAuth(), provider)}

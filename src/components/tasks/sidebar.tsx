@@ -146,7 +146,7 @@ export function Sidebar({ workspaces, allTags }: SidebarProps) {
         <div className="p-4 border-b border-border">
           <Link href="/tasks" className="flex items-center gap-2">
             <span className="text-lg font-bold text-primary font-[family-name:var(--font-display)]">
-              Todoist
+              Tasks
             </span>
           </Link>
         </div>
