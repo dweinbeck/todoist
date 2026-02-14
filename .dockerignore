@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+.planning
+.claude
+docs
+tests
+**/__tests__
+*.md
+repo.zip
+.DS_Store
